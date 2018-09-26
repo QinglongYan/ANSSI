@@ -2,18 +2,17 @@
 % Please edit documentation in R/get_normalized.R
 \name{get_normalized}
 \alias{get_normalized}
-\title{Get normalized series}
+\title{Get normalized datasets}
 \usage{
-get_normalized(datasets, rem = NULL)
+get_normalized(datasets)
 }
 \arguments{
-\item{datasets}{The preprocessed list}
-
-\item{rem}{Remove any lanes when calculating averaged count and occupancy series?}
+\item{datasets}{A list of filtered datasets}
 }
 \value{
-List of normalized datasets
+A list of normalized datasets
 }
 \description{
-This function is applied to calculate normalized count and occupancy series
+The function is to normalize total vehicle c
+ounts and occupancies
 }

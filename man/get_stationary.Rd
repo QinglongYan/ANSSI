@@ -4,18 +4,27 @@
 \alias{get_stationary}
 \title{Get near-stationary states}
 \usage{
-get_stationary(datasets, mindr = 4, maxdr = 10, hot = 0.4, gapt)
+get_stationary(datasets, not = 0.2, hot = 0.4, xot = 0.6,
+  ndr = NULL, hdr = NULL, xdr = NULL, gapt, relation)
 }
 \arguments{
 \item{datasets}{The candidate intervals in list format}
 
-\item{mindr}{The minimum acceptable duration of free-flow period}
+\item{not}{Normal occupancy threshold (0.2 by default)}
 
-\item{maxdr}{The minimum acceptable duration of congested period}
+\item{hot}{High occupancy threshold (0.4 by default)}
 
-\item{hot}{High occupancy threshold}
+\item{xot}{Extremely high occupancy threshold (0.6 by default)}
+
+\item{ndr}{The minimum acceptable duration in normal-occupancy periods (10 by default)}
+
+\item{hdr}{The minimum acceptable duration in high-occupancy periods (4 by default)}
+
+\item{xdr}{The minimum acceptable duration in extremely high-occupancy periods (2.5 by default)}
 
 \item{gapt}{Gap threshold}
+
+\item{relation}{Duration-occupancy relations; optional choices are "stepwise", "linear", "polynomial", and "unitgap"}
 }
 \value{
 List of near-stationary states

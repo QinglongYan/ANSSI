@@ -4,8 +4,7 @@
 \alias{clean_raw}
 \title{Clean extracted datasets}
 \usage{
-clean_raw(indir, outdir, obs = 0.95, hole = 3, window = 5, tocc = 0.3,
-  len = 5)
+clean_raw(indir, outdir, obs = 0.95, hole = 3, tocc = 0.3, len = 5)
 }
 \arguments{
 \item{indir}{The directory where the extracted datasets are located}
@@ -15,8 +14,6 @@ clean_raw(indir, outdir, obs = 0.95, hole = 3, window = 5, tocc = 0.3,
 \item{obs}{Minimum acceptable observation rate}
 
 \item{hole}{Minimum acceptable hole size in minutes}
-
-\item{window}{Half of moving window size}
 
 \item{tocc}{Occupancy threshold}
 

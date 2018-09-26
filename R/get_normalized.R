@@ -1,28 +1,20 @@
-#' Get normalized series
+#' Get normalized datasets
 #'
-#' This function is applied to calculate normalized count and occupancy series
-#' @param datasets The preprocessed list
-#' @param rem Remove any lanes when calculating averaged count and occupancy series?
-#' @return List of normalized datasets
+#' The function is to normalize total vehicle c
+#' ounts and occupancies
+#' @param datasets A list of filtered datasets
+#' @return A list of normalized datasets
 #' @export
-get_normalized <- function (datasets, rem = NULL) {
+get_normalized <- function (datasets) {
   # function for one dataset
-  rem <- rem
   get_norm1 <- function (dataset) {
-    # delete unused lanes?
-    if (is.null(rem)) {
-      dataset <- dataset
-    } else {
-      del_col <- -1*c(2*(rem+1), 2*(rem+1)+1)
-      dataset <- dataset[,del_col]
-    }
     # number of columns
     nc <- ncol(dataset)
     # number of lanes
     lanes <- (nc - 3)/2
     # averaged count and occupancy
-    avg_count <- rowMeans(dataset[, seq(4, nc - 1, by = 2)])
-    avg_occ <- rowMeans(dataset[, seq(5, nc, by = 2)])
+      avg_count <- rowMeans(dataset[, seq(4, nc - 1, by = 2), drop = FALSE])
+      avg_occ <- rowMeans(dataset[, seq(5, nc, by = 2), drop = FALSE])
     # normalized count and occupancy
     nor_count <- scale(avg_count)[, 1]
     nor_occ <- scale(avg_occ)[, 1]

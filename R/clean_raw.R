@@ -5,12 +5,11 @@
 #' @param outdir The directory to save the preprocessed datasets
 #' @param obs Minimum acceptable observation rate
 #' @param hole Minimum acceptable hole size in minutes
-#' @param window Half of moving window size
 #' @param tocc Occupancy threshold
 #' @param len Minimum length of a congested period in minutes
 #' @return Preprocessed datasets in csv format
 #' @export
-clean_raw <- function (indir, outdir, obs = 0.95, hole = 3, window = 5, tocc = 0.3, len = 5) {
+clean_raw <- function (indir, outdir, obs = 0.95, hole = 3, tocc = 0.3, len = 5) {
   # load package
   require(imputeTS)
   # list file names
@@ -41,10 +40,14 @@ clean_raw <- function (indir, outdir, obs = 0.95, hole = 3, window = 5, tocc = 0
         full_data[na_index, 3] <- na_index
         # fill in count and occ
         for (j in 4:nc) {
-          full_data[,j] <- na.ma(full_data[,j], k = window, weighting = "simple")
+          if (j %% 2 == 0){
+            full_data[,j] <- round(na.interpolation(full_data[,j]))
+          }else{
+            full_data[,j] <- round(na.interpolation(full_data[,j]), 4)
+          }
         }
         # congestion filter
-        crit <- max(rle(diff(which(as.numeric(rowMeans(full_data[,seq(5,nc,by=2)]))>=tocc)))$lengths, -1)+1
+        crit <- max(rle(diff(which(as.numeric(rowMeans(full_data[,seq(5,nc,by=2),drop = FALSE]))>=tocc)))$lengths, -1)+1
         if (crit >= (2*len)) {
           write.csv(full_data, paste(outdir, gsub("extracted", "filtered", fnames[i]), sep = ""), row.names = F)
         }

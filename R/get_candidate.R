@@ -14,25 +14,23 @@ get_candidate <- function (datasets, penalty) {
   get_cand1 <- function(dataset) {
     # required packages
     require(changepoint)
-    require(parallel)
+    require(chron)
     # calculate changepoints
     fit_count <- cpt.mean(dataset$nor_count, method = "PELT",
-                         penalty = "Manual", pen.value = paste(penalty, "*", "log(n)", sep = ""))
+                          penalty = "Manual", pen.value = paste(penalty, "*", "log(n)", sep = ""))
     fit_occ <- cpt.mean(dataset$nor_occ, method = "PELT",
                         penalty = "Manual", pen.value = paste(penalty, "*", "log(n)", sep = ""))
     cpt_count <- fit_count@cpts
     cpt_occ <- fit_occ@cpts
     # union of changepoints from count and occ series
     cpt <- sort(Reduce(union, list(cpt_count, cpt_occ, 0))) # include 0 and 2880
+    # define a time axis
+    time_seq <- c(as.character(times(0:2879/2880)), "24:00:00")
     # function to get characteristics from one candidate
     get_char <- function(x) {
-      # load required package
-      library(chron)
       # start and end time index
       spt = cpt[x] + 1
       ept = cpt[x + 1]
-      # define a time axis
-      time_seq <- c(as.character(times(0:2879/2880)), "24:00:00")
       # start and end time index
       stm = time_seq[spt]
       etm = time_seq[ept+1]
@@ -43,22 +41,18 @@ get_candidate <- function (datasets, penalty) {
       # previous information
       info = dataset[spt:ept, ]
       # candidate flowrate and occupancy
-      can_flow = 60/dur * sum(info$avg_count)
+      can_count = 60/dur * sum(info$avg_count)
       can_occ = 1/len * sum(info$avg_occ)
       # flow and occupancy gaps
-      gap_flow = max(abs(cumsum(info$nor_count) - fitted.values(lm(cumsum(info$nor_count) ~ c(spt:ept)))))
+      gap_count = max(abs(cumsum(info$nor_count) - fitted.values(lm(cumsum(info$nor_count) ~ c(spt:ept)))))
       gap_occ = max(abs(cumsum(info$nor_occ) - fitted.values(lm(cumsum(info$nor_occ) ~ c(spt:ept)))))
       # combine output
-      output <- data.frame(info, spt, ept, stm, etm, len, dur, can_flow, can_occ, gap_flow, gap_occ, stringsAsFactors = F)
-      return(output)
+      output <- data.frame(info, spt, ept, stm, etm, len, dur, can_count, can_occ, gap_count, gap_occ, stringsAsFactors = F)
+      output
     }
-    # parallel computing
-    no_cores <- detectCores() - 1
-    cl <- makeCluster(no_cores)
-    outputs <- parLapply(cl, 1:(length(cpt)-1), get_char)
-    #outputs <- lapply(1:(length(cpt)-1), get_char)
-    stopCluster(cl)
-    return(outputs)
+    outputs <- lapply(1:(length(cpt)-1), get_char)
+    #outputs <- lapply(1:(length(cpt)-1), get_char
+    outputs
   }
   # parallel computing
   no_cores <- detectCores() - 1
